@@ -1,17 +1,5 @@
 name: artifact
-on:
-  push:
-    branches:
-      - main
-    paths:
-      - ./**
-
-  pull_request:
-    branches:
-      - main
-    paths:
-      - ./**
-    
+on: workflow_dispatch
 
 env:
   AWS_ACCESS_KEY: ${{secrets.AWS_ACCESS_KEY}}
@@ -71,7 +59,7 @@ jobs:
           secret_key: ${{ secrets.AWS_ACCESS_KEY }}
           registry: ${{ secrets.REGISTRY }}
           # cache_from: ${{ secrets.cache }}
-          repo: ${{ECR_REPO}}
+          repo: ${{env.ECR_REPO}}
           region: us-east-1
           tags: latest,${{github.run_number}}
           daemon_off: false
@@ -110,7 +98,7 @@ jobs:
           # config-files: .github/values/dev.yaml
           chart-path: vprofilechar/
           namespace: default
-          values: appimage=${{secrets.AWS_REGISTRY}}/${{ECR_REPO}},appnumber=${{github.run_number}}
+          values: appimage=${{secrets.AWS_REGISTRY}}/${{env.ECR_REPO}},appnumber=${{github.run_number}}
           name: vprofile-stack
           
 
