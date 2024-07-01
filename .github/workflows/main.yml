@@ -1,0 +1,50 @@
+name: artifact
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - ./**
+
+env:
+  AWS_ACCESS_KEY: ${{secrets.AWS_ACCESS_KEY}}
+  AWS_SECRET_KEY: ${{secrets.AWS_SECRET_KEY}}
+  AWS_REGION: us-east-1
+  AWS_BUCKET: ${{secrets.AWS_BUCKET}}
+  AWS_CLUSTER: vprofile-eks
+
+jobs:
+  testing:
+    runs-on: ubnuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+
+      - name: maven install
+        id: install
+        run: mvn install
+      
+      - name: maven checkstyle
+        id: checkstyle
+        run: mvn checkstyle:checkstyle
+
+      - name: sonar code analysis
+        run: sonar-scanner
+           -Dsonar.host.url=${{ secrets.SONAR_URL }}
+           -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+           -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }}
+           -Dsonar.projectKey=${{ secrets.SONAR_PROJECT }}
+           -Dsonar.sources=src/
+           -Dsonar.junit.reportsPath=target/surefire-reports/
+           -Dsonar.jacoco.reportsPath=target/jacoco.exec
+           -Dsonar.java.checkstyle.reporsPath=target/checkstyle-result.xml
+           -Dsonar.java.binaries=target/test-classes/com/visualpathit/account
+
+      - name: quality gate
+        id: sonarqube-quality-gate-check
+        uses: sonarsource/sonarqube-quality-gate-action@master
+      # Force to fail step after specific time.
+        timeout-minutes: 5
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_URL }} #OPTIONAL
