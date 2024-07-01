@@ -2,10 +2,7 @@ name: artifact
 on: workflow_dispatch
 
 env:
-  AWS_ACCESS_KEY: ${{secrets.AWS_ACCESS_KEY}}
-  AWS_SECRET_KEY: ${{secrets.AWS_SECRET_KEY}}
   AWS_REGION: us-east-1
-  AWS_BUCKET: ${{secrets.AWS_BUCKET}}
   AWS_CLUSTER: vprofile-eks
   ECR_REPO: vproapp
 
