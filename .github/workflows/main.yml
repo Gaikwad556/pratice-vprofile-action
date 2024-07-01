@@ -24,6 +24,9 @@ jobs:
         id: checkstyle
         run: mvn checkstyle:checkstyle
 
+      - name: Setup SonarQube
+        uses: warchant/setup-sonar-scanner@v7
+
       - name: sonar code analysis
         run: sonar-scanner
            -Dsonar.host.url=${{ secrets.SONAR_URL }}
